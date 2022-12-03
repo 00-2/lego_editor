@@ -64,17 +64,17 @@ def main():
     if key == glfw.KEY_LEFT_CONTROL:
       camera.pos[1] += movement_speed
     if key == glfw.KEY_UP:
-      editor.light_pos += camera.forward * movement_speed
+      editor.light_positions[0] += camera.forward * movement_speed
     if key == glfw.KEY_DOWN:
-      editor.light_pos -= camera.forward * movement_speed
+      editor.light_positions[0] -= camera.forward * movement_speed
     if key == glfw.KEY_RIGHT:
-      editor.light_pos -= camera_right * movement_speed
+      editor.light_positions[0] -= camera_right * movement_speed
     if key == glfw.KEY_LEFT:
-      editor.light_pos += camera_right * movement_speed
+      editor.light_positions[0] += camera_right * movement_speed
     if key == glfw.KEY_RIGHT_SHIFT:
-      editor.light_pos[1] += movement_speed
+      editor.light_positions[0][1] += movement_speed
     if key == glfw.KEY_RIGHT_CONTROL:
-      editor.light_pos[1] -= movement_speed
+      editor.light_positions[0][1] -= movement_speed
     if key == glfw.KEY_LEFT_BRACKET:
       editor.light_dim -= 0.02
     if key == glfw.KEY_RIGHT_BRACKET:
