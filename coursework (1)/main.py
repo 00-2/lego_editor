@@ -20,7 +20,6 @@ def main():
     return
   glfw.make_context_current(window)
   glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
-  glClearColor(255, 255, 255, 0)
 
   camera = Camera()
   editor = Editor(camera)
