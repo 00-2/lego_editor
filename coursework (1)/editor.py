@@ -20,6 +20,7 @@ class Editor:
         self.camera_location = glGetUniformLocation(self.program.program, "camera")
         self.part_color_location = glGetUniformLocation(self.program.program, "partColor")
         self.light_position_location = glGetUniformLocation(self.program.program, "lightPosition")
+        self.light1_position_location = glGetUniformLocation(self.program.program, "light1Position")
         self.dim_location = glGetUniformLocation(self.program.program, "dim")
         self.camera = camera
 
@@ -43,7 +44,9 @@ class Editor:
                        [255, 255, 255],
                        [5, 19, 29]], dtype="float32") / 256
 
-        self.light_pos = np.array([0, 10, 0], dtype="float32")
+        # self.light_pos = np.array([0, 10, 0], dtype="float32")
+        ((l1x, l1y, l1z), (l2x, l2y, l2z)) = ((-10, 0, 0), (0,40,0))
+        self.light_positions = np.array([[l1x, l1y, l1z], [l2x,l2y,l2z]], dtype="float32")
         self.light_dim = 0.98
 
         self.cube_vao = glGenVertexArrays(1)
@@ -80,19 +83,15 @@ class Editor:
         glUseProgram(self.program.program)
         
         glUniformMatrix4fv(self.camera_location, 1, GL_FALSE, self.camera.get_matrix(window_size[0] / window_size[1]))
-        glUniform3fv(self.light_position_location, 1, self.light_pos)
+        glUniform3fv(self.light_position_location, 1, self.light_positions[0])
+        glUniform3fv(self.light1_position_location, 1, self.light_positions[1])
         glUniform1f(self.dim_location, self.light_dim)
 
         glBindVertexArray(self.cube_vao)
         glUniform3f(self.part_color_location, 100, 100, 100)
-        glUniformMatrix4fv(self.model_location, 1, GL_FALSE, np.array([
-                [1, 0, 0, -self.light_pos[0]],
-                [0, 1, 0, -self.light_pos[1]],
-                [0, 0, 1, -self.light_pos[2]],
-                [0, 0, 0, 1]
-            ], dtype="float32").T)
+
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 14)
-        
+
         for part_type, parts in enumerate(self.parts):
             Part.render_many(part_type, parts, self)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
