@@ -288,12 +288,12 @@ class Part:
                 # algorithm. If faces vector intersect more than one part, any other part not highlighted
                 model = part.model_matrix()
                 glUniformMatrix4fv(editor.model_location, 1, GL_FALSE, model)
-                if not in_shadow(part, part_type, light_position,editor.parts):
-                    #set light_position to 0
-                    glUniform1f(editor.light_status, 0.1)
-                else:
-                    #set dim to 0.2
-                    glUniform1f(editor.light_status, 1)
+                # if not in_shadow(part, part_type, light_position,editor.parts):
+                #     #set light_position to 0
+                #     glUniform1f(editor.light_status, 0.1)
+                # else:
+                #     #set dim to 0.2
+                #     glUniform1f(editor.light_status, 1)
                 glUniformMatrix3fv(editor.model_normal_location, 1, GL_FALSE, np.linalg.inv(model[:-1,:-1]).transpose())
                 glUniform3fv(editor.part_color_location, 1, editor.colors[part.color % len(editor.colors)])
 
