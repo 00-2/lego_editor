@@ -21,10 +21,10 @@ def main():
   glfw.make_context_current(window)
   glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
   glClearColor(255, 255, 255, 0)
-
   camera = Camera()
   editor = Editor(camera)
-
+  color_refresh = False
+  rotate_lights_angle = 0
   prevCursorPos = (-1, -1)
   yawPitch = (0, 0)
   def cursorPosCallback(window, xpos, ypos):
@@ -47,7 +47,12 @@ def main():
   def keyCallback(window, key, scancode, action, mods):
     nonlocal camera
     nonlocal editor
+    nonlocal color_refresh
     movement_speed = 0.1
+    if color_refresh:
+      glClearColor(255, 255, 255, 0)
+      color_refresh = False
+      return
     if action != glfw.PRESS and action != glfw.REPEAT:
       return
     if key == glfw.KEY_W:
@@ -79,6 +84,9 @@ def main():
       editor.light_dim -= 0.02
     if key == glfw.KEY_RIGHT_BRACKET:
       editor.light_dim += 0.02
+    if key == glfw.KEY_SPACE:
+      print('SPACE PRESSED')
+      editor.rotate_lights = not editor.rotate_lights
     if action != glfw.PRESS:
       return
     if key == glfw.KEY_R:
@@ -96,7 +104,10 @@ def main():
     if key == glfw.KEY_O:
       editor.active_part.pos[1] -= 1
     if key == glfw.KEY_P:
-      editor.fix()
+      res = editor.fix()
+      if not res:
+        glClearColor(255, 0, 0, 0)
+        color_refresh = True
     if key == glfw.KEY_C:
       editor.active_part.color += 1
     if key == glfw.KEY_F:
