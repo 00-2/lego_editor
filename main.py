@@ -4,7 +4,7 @@ from editor import Editor, Camera, Part
 import numpy as np
 
 def main():
-  window_size = (640, 480)
+  window_size = (1400, 800)
   def on_resize(window, size_x, size_y):
     nonlocal window_size
     window_size = (size_x, size_y)
@@ -12,6 +12,7 @@ def main():
 
   if not glfw.init():
     return
+
   window = glfw.create_window(*window_size, "Lego editor", None, None)
   glfw.set_framebuffer_size_callback(window, on_resize)
   if not window:
@@ -19,11 +20,11 @@ def main():
     return
   glfw.make_context_current(window)
   glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
-
-
+  glClearColor(255, 255, 255, 0)
   camera = Camera()
   editor = Editor(camera)
-
+  color_refresh = False
+  rotate_lights_angle = 0
   prevCursorPos = (-1, -1)
   yawPitch = (0, 0)
   def cursorPosCallback(window, xpos, ypos):
@@ -46,7 +47,12 @@ def main():
   def keyCallback(window, key, scancode, action, mods):
     nonlocal camera
     nonlocal editor
+    nonlocal color_refresh
     movement_speed = 0.1
+    if color_refresh:
+      glClearColor(255, 255, 255, 0)
+      color_refresh = False
+      return
     if action != glfw.PRESS and action != glfw.REPEAT:
       return
     if key == glfw.KEY_W:
@@ -63,21 +69,24 @@ def main():
     if key == glfw.KEY_LEFT_CONTROL:
       camera.pos[1] += movement_speed
     if key == glfw.KEY_UP:
-      editor.light_pos += camera.forward * movement_speed
+      editor.light_positions[0] += camera.forward * movement_speed
     if key == glfw.KEY_DOWN:
-      editor.light_pos -= camera.forward * movement_speed
+      editor.light_positions[0] -= camera.forward * movement_speed
     if key == glfw.KEY_RIGHT:
-      editor.light_pos -= camera_right * movement_speed
+      editor.light_positions[0] -= camera_right * movement_speed
     if key == glfw.KEY_LEFT:
-      editor.light_pos += camera_right * movement_speed
+      editor.light_positions[0] += camera_right * movement_speed
     if key == glfw.KEY_RIGHT_SHIFT:
-      editor.light_pos[1] += movement_speed
+      editor.light_positions[0][1] += movement_speed
     if key == glfw.KEY_RIGHT_CONTROL:
-      editor.light_pos[1] -= movement_speed
+      editor.light_positions[0][1] -= movement_speed
     if key == glfw.KEY_LEFT_BRACKET:
       editor.light_dim -= 0.02
     if key == glfw.KEY_RIGHT_BRACKET:
       editor.light_dim += 0.02
+    if key == glfw.KEY_SPACE:
+      print('SPACE PRESSED')
+      editor.rotate_lights = not editor.rotate_lights
     if action != glfw.PRESS:
       return
     if key == glfw.KEY_R:
@@ -95,7 +104,10 @@ def main():
     if key == glfw.KEY_O:
       editor.active_part.pos[1] -= 1
     if key == glfw.KEY_P:
-      editor.fix()
+      res = editor.fix()
+      if not res:
+        glClearColor(255, 0, 0, 0)
+        color_refresh = True
     if key == glfw.KEY_C:
       editor.active_part.color += 1
     if key == glfw.KEY_F:
